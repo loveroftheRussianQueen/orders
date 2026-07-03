@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -50,8 +51,7 @@ func (s *OrderService) GetOrder(ctx context.Context, id int64) (model.Order, err
 		return order, nil
 	}
 	if !errors.Is(err, redis.Nil) {
-		// cache error — log and fall through to DB
-		fmt.Printf("redis get order: %v\n", err)
+		slog.Warn("redis get order", "err", err)
 	}
 
 	// cache miss
