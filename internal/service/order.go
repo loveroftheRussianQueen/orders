@@ -13,7 +13,10 @@ import (
 	"orders/internal/repository"
 )
 
-var ErrOrderLocked = errors.New("another order from this user is being processed")
+var (
+	ErrOrderLocked       = errors.New("another order from this user is being processed")
+	ErrInvalidTransition = errors.New("order is already in a terminal state")
+)
 
 type OrderService struct {
 	repo  *repository.Repository
@@ -71,13 +74,19 @@ func (s *OrderService) ListOrders(ctx context.Context, f model.ListFilter) ([]mo
 
 // UpdateStatus updates order status + writes outbox row, then invalidates cache.
 func (s *OrderService) UpdateStatus(ctx context.Context, id int64, status model.Status) (model.Order, error) {
+	current, err := s.GetOrder(ctx, id)
+	if err != nil {
+		return model.Order{}, err
+	}
+	if current.Status == model.StatusPaid || current.Status == model.StatusCancelled {
+		return model.Order{}, ErrInvalidTransition
+	}
+
 	order, err := s.repo.UpdateStatusWithOutbox(ctx, id, status)
 	if err != nil {
 		return model.Order{}, err
 	}
 
-	// invalidate cache so next GET reads fresh data
 	s.redis.Del(ctx, fmt.Sprintf("order:%d", id))
-
 	return order, nil
 }

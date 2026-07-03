@@ -107,6 +107,10 @@ func (h *OrderHandler) UpdateStatus(w http.ResponseWriter, r *http.Request) {
 
 	order, err := h.svc.UpdateStatus(r.Context(), id, req.Status)
 	if err != nil {
+		if errors.Is(err, service.ErrInvalidTransition) {
+			writeError(w, http.StatusConflict, err.Error())
+			return
+		}
 		writeError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
