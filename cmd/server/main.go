@@ -56,6 +56,7 @@ func main() {
 
 	// --- HTTP router ---
 	r := chi.NewRouter()
+	r.Use(handler.RequestIDMiddleware)
 	r.Use(handler.MetricsMiddleware)
 
 	orderHandler := handler.NewOrderHandler(svc)
