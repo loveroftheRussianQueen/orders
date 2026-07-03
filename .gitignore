@@ -1,0 +1,31 @@
+# Binaries
+/bin/
+*.exe
+*.out
+
+# Go build cache
+/vendor/
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Qodo
+.qodo/
+
+# Local data volumes (docker)
+postgres_data/
+grafana_data/
+
+# Unrelated
+/unrelated/
