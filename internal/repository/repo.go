@@ -114,10 +114,20 @@ func (r *Repository) GetOrder(ctx context.Context, id int64) (model.Order, error
 	return order, err
 }
 
-func (r *Repository) ListOrders(ctx context.Context) ([]model.Order, error) {
-	rows, err := r.pool.Query(ctx,
-		`SELECT id, user_id, amount, status, created_at FROM orders ORDER BY id DESC LIMIT 100`,
+func (r *Repository) ListOrders(ctx context.Context, f model.ListFilter) ([]model.Order, error) {
+	var (
+		query string
+		args  []any
 	)
+	if f.Status != "" {
+		query = `SELECT id, user_id, amount, status, created_at FROM orders WHERE status=$1 ORDER BY id DESC LIMIT $2 OFFSET $3`
+		args = []any{f.Status, f.Limit, f.Offset}
+	} else {
+		query = `SELECT id, user_id, amount, status, created_at FROM orders ORDER BY id DESC LIMIT $1 OFFSET $2`
+		args = []any{f.Limit, f.Offset}
+	}
+
+	rows, err := r.pool.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}

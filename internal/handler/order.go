@@ -61,7 +61,23 @@ func (h *OrderHandler) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *OrderHandler) List(w http.ResponseWriter, r *http.Request) {
-	orders, err := h.svc.ListOrders(r.Context())
+	f := model.ListFilter{Limit: 20}
+
+	if v := r.URL.Query().Get("limit"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 && n <= 100 {
+			f.Limit = n
+		}
+	}
+	if v := r.URL.Query().Get("offset"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n >= 0 {
+			f.Offset = n
+		}
+	}
+	if v := r.URL.Query().Get("status"); v != "" {
+		f.Status = model.Status(v)
+	}
+
+	orders, err := h.svc.ListOrders(r.Context(), f)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, err.Error())
 		return

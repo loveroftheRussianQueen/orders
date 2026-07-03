@@ -65,8 +65,8 @@ func (s *OrderService) GetOrder(ctx context.Context, id int64) (model.Order, err
 	return order, nil
 }
 
-func (s *OrderService) ListOrders(ctx context.Context) ([]model.Order, error) {
-	return s.repo.ListOrders(ctx)
+func (s *OrderService) ListOrders(ctx context.Context, f model.ListFilter) ([]model.Order, error) {
+	return s.repo.ListOrders(ctx, f)
 }
 
 // UpdateStatus updates order status + writes outbox row, then invalidates cache.

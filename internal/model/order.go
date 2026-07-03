@@ -38,6 +38,12 @@ type OrderEvent struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+type ListFilter struct {
+	Status Status
+	Limit  int
+	Offset int
+}
+
 // OutboxRow is a row from the outbox table.
 type OutboxRow struct {
 	ID      int64
