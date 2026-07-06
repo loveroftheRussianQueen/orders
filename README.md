@@ -1,6 +1,6 @@
 # orders
 
-A Go service for creating and tracking orders. Built as a learning project to practice patterns you'd actually use in production: outbox, distributed locking, idempotent consumers, observability.
+A Go service for creating and tracking orders.
 
 Stack: Go, PostgreSQL, Kafka, Redis, Prometheus, Grafana.
 
